@@ -1,12 +1,13 @@
 import { ExpressPeerServer } from "peer";
 import express from "express";
 
+const PORT = 3033
 const app = express();
 
 app.get("/", (req, res, next) => res.send("wibu stream ok"));
 
-const server = app.listen(9000, () =>
-  console.log("Server started on port 9000 ")
+const server = app.listen(PORT, () =>
+  console.log(`Server started on port ${PORT} `)
 );
 
 const peerServer = ExpressPeerServer(server, {
