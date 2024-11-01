@@ -1,7 +1,7 @@
 import { ExpressPeerServer } from "peer";
 import express from "express";
 
-const PORT = 3033
+const PORT = 3034
 const app = express();
 
 app.get("/", (req, res, next) => res.send("wibu stream ok"));
