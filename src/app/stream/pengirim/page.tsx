@@ -173,6 +173,7 @@ function StreamContainer({ peerInstance }: { peerInstance: Peer | null }) {
         <video
           ref={remoteVideoRef}
           autoPlay
+          muted
           playsInline
           style={{
             width: "100%",
