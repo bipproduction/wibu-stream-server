@@ -7,22 +7,21 @@ import { apies } from "@/lib/routes";
 import { ActionIcon, Card, Flex, Group, Stack, Text } from "@mantine/core";
 import { Prisma } from "@prisma/client";
 import Peer from "peerjs";
-import { useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { MdAccountCircle, MdRestore } from "react-icons/md";
 import { WibuStreamProvider } from "wibu-pkg";
 import { CreateVideoCall } from "./_lib/CreateVideoCall";
-import { useSearchParams } from "next/navigation";
 
-export default function Page() {
-  const user = useSearchParams().get("user");
-  const mode = useSearchParams().get("mode");
+export default function Page({searchParams}: {searchParams: Promise<{user: string, mode: string}>}) {
+  const {user, mode} = use(searchParams);
   if (!user) return <Text>please login</Text>;
   if (!mode) return <Text>mode = dev | prd</Text>;
 
   const host = mode === "dev" ? "localhost" : "wibu-stream-server.wibudev.com";
   const port = mode === "dev" ? 3034 : 443;
+
   return (
-    <Stack>
+    <Stack suppressHydrationWarning>
       <WibuStreamProvider headId={user} config={{ host, port }}>
         {(peer) => <ContactContainer peerInstance={peer} debug />}
       </WibuStreamProvider>

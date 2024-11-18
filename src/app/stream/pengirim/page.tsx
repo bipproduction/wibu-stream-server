@@ -4,7 +4,7 @@
 import { ActionIcon, Box, Loader, Stack, Text } from "@mantine/core";
 import { useSearchParams } from "next/navigation";
 import Peer, { MediaConnection } from "peerjs";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { WibuStreamProvider } from "wibu-pkg";
 
@@ -45,9 +45,8 @@ const playVideo = async (
   }
 };
 
-export default function Page() {
-  const user = useSearchParams().get("user");
-  const mode = useSearchParams().get("mode");
+export default function Page({searchParams}: {searchParams: Promise<{user: string, mode: string}>}) {
+  const {user, mode} = use(searchParams);
   if (!user) return <Text>please login</Text>;
   if (!mode) return <Text>mode = dev | prd</Text>;
 
