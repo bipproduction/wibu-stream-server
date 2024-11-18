@@ -27,7 +27,7 @@ export function CreateVideoCall({
   peerInstance: Peer;
   streamId: string;
 }) {
-  // const localVideoRef = useRef<HTMLVideoElement>(null);
+  const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [callState, setCallState] = useState<CallState>(initialCallState);
@@ -35,8 +35,8 @@ export function CreateVideoCall({
   const handleClose = useCallback(async () => {
     try {
       console.log("Stop stream");
-      // localVideoRef.current?.pause();
-      // localVideoRef.current!.srcObject = null;
+      localVideoRef.current?.pause();
+      localVideoRef.current!.srcObject = null;
       remoteVideoRef.current?.pause();
       remoteVideoRef.current!.srcObject = null;
       callState.remoteStream?.getTracks().forEach((track) => track.stop());
@@ -83,7 +83,7 @@ export function CreateVideoCall({
         });
 
         // Setup local video first
-        // await setupVideoElement(localVideoRef.current, stream);
+        await setupVideoElement(localVideoRef.current, stream);
 
         // Update state with local stream
         setCallState((prev) => ({
@@ -197,7 +197,7 @@ export function CreateVideoCall({
               objectFit: "cover"
             }}
           />
-          {/* <video
+          <video
             ref={localVideoRef}
             autoPlay
             playsInline
@@ -212,7 +212,7 @@ export function CreateVideoCall({
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
               objectFit: "cover"
             }}
-          /> */}
+          />
 
           {callState.isConnecting && (
             <div
