@@ -1,0 +1,53 @@
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting());
+  console.log('Service worker installing...');
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+  console.log('Service worker activating...');
+});
+
+self.addEventListener('push', function (event) {
+  let data = {};
+  try {
+    data = event.data?.json() ?? {};
+  } catch (error) {
+    console.error('Error parsing push data:', error);
+  }
+
+  // Send message to clients without showing a notification if `silent` is true
+  self.clients.matchAll().then(function (clients) {
+    if (clients.length > 0) {
+      clients.forEach(function (client) {
+        client.postMessage({
+          type: 'PUSH_MESSAGE',
+          payload: data,
+        });
+      });
+    } else {
+      console.warn("No clients to receive the message.");
+    }
+  });
+
+  // Show notification if `silent` is not true
+  if (event.data && !data.silent) {
+    const title = data.title || "Default Title";
+    const options = {
+      body: data.body || "Default notification body",
+      icon: data.icon || '/icon-192x192.png',
+      badge: data.badge || '/icon-192x192.png',
+      image: data.image || '/icon-192x192.png',
+      vibrate: [100, 50, 100],
+      data: {
+        dateOfArrival: Date.now(),
+        primaryKey: '2',
+        ...data.data,  // Merge additional data if present
+      },
+    };
+
+    event.waitUntil(
+      self.registration.showNotification(title, options)
+    );
+  }
+});

@@ -3,22 +3,52 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "concurrently \"next dev -p 3035 --turbopack --experimental-https\" \"npx tsx watch ./stream-server/index.ts -p 3034 --yes\"",
+    "dev:client": "next dev -p 3035 --turbopack --experimental-https",
+    "dev:server": "npx tsx watch ./stream-server/index.ts -p 3034 --yes",
     "build": "next build",
-    "start": "next start",
+    "start": "concurrently \"next start -p 3035\" \"npx tsx ./stream-server/index.ts -p 3034 --yes\"",
+    "start:peer": "npx tsx ./stream-server/index.ts -p 3034 --yes",
     "lint": "next lint"
   },
   "dependencies": {
+    "@mantine/core": "^7.13.5",
+    "@mantine/hooks": "^7.13.5",
+    "@prisma/client": "^5.22.0",
+    "@types/cors": "^2.8.17",
+    "@types/lodash": "^4.17.13",
+    "@types/uuid": "^10.0.0",
+    "@types/web-push": "^3.6.4",
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "dedent": "^1.5.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "localforage": "^1.10.0",
+    "lodash": "^4.17.21",
+    "minimist": "^1.2.8",
+    "next": "15.0.3",
+    "peer": "^1.0.2",
+    "peerjs": "^1.5.4",
+    "prisma": "^5.22.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
-    "next": "15.0.3"
+    "react-icons": "^5.3.0",
+    "uuid": "^11.0.2",
+    "web-push": "^3.6.7",
+    "wibu-pkg": "^1.0.63"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@types/minimist": "^1.2.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "concurrently": "^8.0.1",
     "eslint": "^8",
-    "eslint-config-next": "15.0.3"
+    "eslint-config-next": "15.0.3",
+    "postcss": "^8.4.47",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
+    "typescript": "^5"
   }
 }
