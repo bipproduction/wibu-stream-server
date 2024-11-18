@@ -1,0 +1,11 @@
+{
+  "version": "v1",
+  "packages": {
+    "wibu-pkg": {
+      "version": "1.0.64",
+      "signature": "3300b85a969f9fc362b64ebb387e45e7",
+      "file": true,
+      "replaced": "^1.0.63"
+    }
+  }
+}

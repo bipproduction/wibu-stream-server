@@ -4,18 +4,26 @@
 // Page.tsx
 
 import { apies } from "@/lib/routes";
-import { Card, Flex, Group, Stack, Text } from "@mantine/core";
+import { ActionIcon, Card, Flex, Group, Stack, Text } from "@mantine/core";
 import { Prisma } from "@prisma/client";
 import Peer from "peerjs";
 import { useCallback, useEffect, useState } from "react";
-import { MdAccountCircle } from "react-icons/md";
+import { MdAccountCircle, MdRestore } from "react-icons/md";
 import { WibuStreamProvider } from "wibu-pkg";
 import { CreateVideoCall } from "./_lib/CreateVideoCall";
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
+  const user = useSearchParams().get("user");
+  const mode = useSearchParams().get("mode");
+  if (!user) return <Text>please login</Text>;
+  if (!mode) return <Text>mode = dev | prd</Text>;
+
+  const host = mode === "dev" ? "localhost" : "wibu-stream-server.wibudev.com";
+  const port = mode === "dev" ? 3034 : 443;
   return (
     <Stack>
-      <WibuStreamProvider headId="5678" mode="dev">
+      <WibuStreamProvider headId={user} config={{ host, port }}>
         {(peer) => <ContactContainer peerInstance={peer} debug />}
       </WibuStreamProvider>
     </Stack>
@@ -64,14 +72,26 @@ function ContactContainer({
     loadUserStream().then(setListUserStream);
   }, [loadUserStream]);
 
+  async function onReset() {
+    fetch(apies["/api/subscribe/reset"]).then((res) => {
+      loadUserStream().then(setListUserStream);
+      alert(res.statusText);
+    });
+  }
+
   if (!listUserStream) return <div>Loading...</div>;
   if (!peerInstance || !peerInstance.id) return <div>Loading...</div>;
   return (
     <Stack p={"md"}>
       <Card>
-        <Flex gap={"md"} align={"center"}>
-          <MdAccountCircle size={24} />
-          {peerInstance?.id.split("-")[0]}
+        <Flex gap={"md"} align={"center"} justify={"space-between"}>
+          <Flex gap={"md"} align={"center"}>
+            <MdAccountCircle size={24} />
+            {peerInstance?.id.split("-")[0]}
+          </Flex>
+          <ActionIcon onClick={onReset}>
+            <MdRestore />
+          </ActionIcon>
         </Flex>
       </Card>
       {listUserStream

@@ -27,7 +27,6 @@ interface SSLPaths {
   CERT_PATH: string;
 }
 
-
 // Parse command line arguments and environment variables
 const args = minimist(process.argv.slice(2));
 const PORT = args.port || args.p || process.env.PEER_SERVER_PORT || 3034;
@@ -84,17 +83,18 @@ function startPeerServer(): void {
     // Event handlers
     peerServer.on("connection", (client) => {
       // console.log("Client connected to Peer Server:", client.getId());
-      updateStatus({ prisma, client, isActive: true });
+      updateStatus({ client, isActive: true });
     });
 
     peerServer.on("disconnect", async (client) => {
       // console.log("Client disconnected from Peer Server:", client.getId());
-      await updateStatus({ prisma, client, isActive: false });
+      await updateStatus({ client, isActive: false });
     });
 
     peerServer.on("message", async (client, data) => {
       // console.log("Received message from client:", client.getId(), data);
-      await updateStatus({ prisma, client, isActive: true });
+      // await updateStatus({ client, isActive: true });
+      // console.log("Received message from client:", client.getId(), data);
     });
 
     peerServer.on("error", (error) => {
@@ -128,29 +128,37 @@ function startPeerServer(): void {
 // Start the server
 startPeerServer();
 
-async function updateStatus(params: {
-  prisma: PrismaClient;
-  client: IClient;
-  isActive: boolean;
-}) {
-  const { client, isActive, prisma } = params;
+async function updateStatus(params: { client: IClient; isActive: boolean }) {
+  const { client, isActive } = params;
   const [userId, streamId] = client.getId().split("-");
-  if (!userId.startsWith("wibu")) return;
+  if (!userId.startsWith("wibu")) return console.log("no wibu");
+
+  const usr = await prisma.user.upsert({
+    where: {
+      id: userId
+    },
+    create: {
+      id: userId
+    },
+    update: {}
+  });
+
   const upd = await prisma.streamInstance.upsert({
     where: {
-      streamId: streamId
+      streamId
     },
     create: {
       streamId: streamId,
-      userId: userId,
+      userId: usr.id,
       isActive: isActive
     },
     update: {
-      isActive: isActive
+      isActive: isActive,
+      userId: usr.id
     }
   });
 
-  console.table(upd);
+  console.log(upd);
 }
 
 export {};

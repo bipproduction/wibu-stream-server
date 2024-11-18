@@ -19,3 +19,8 @@ export async function POST(req: Request) {
 
   return new Response(JSON.stringify(upsert));
 }
+
+export async function GET() {
+  const subs = await prisma.subscription.findMany();
+  return new Response(JSON.stringify(subs));
+}
