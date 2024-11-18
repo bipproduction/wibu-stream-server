@@ -27,6 +27,7 @@ interface SSLPaths {
   CERT_PATH: string;
 }
 
+
 // Parse command line arguments and environment variables
 const args = minimist(process.argv.slice(2));
 const PORT = args.port || args.p || process.env.PEER_SERVER_PORT || 3034;
