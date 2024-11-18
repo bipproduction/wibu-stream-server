@@ -45,8 +45,8 @@ const playVideo = async (
   }
 };
 
-export default function Page({searchParams}: {searchParams: Promise<{user: string, mode: string}>}) {
-  const {user, mode} = use(searchParams);
+export default function Page({searchParams}: {searchParams: Promise<{user: string, mode: string, show: boolean}>}) {
+  const {user, mode, show} = use(searchParams);
   if (!user) return <Text>please login</Text>;
   if (!mode) return <Text>mode = dev | prd</Text>;
 
@@ -61,13 +61,13 @@ export default function Page({searchParams}: {searchParams: Promise<{user: strin
           port
         }}
       >
-        {(peer) => <StreamContainer peerInstance={peer} />}
+        {(peer) => <StreamContainer peerInstance={peer} show={show} />}
       </WibuStreamProvider>
     </Stack>
   );
 }
 
-function StreamContainer({ peerInstance }: { peerInstance: Peer | null }) {
+function StreamContainer({ peerInstance, show }: { peerInstance: Peer | null, show: boolean | null }) {
   const [callState, setCallState] = useState<CallState>(initialCallState);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -168,17 +168,16 @@ function StreamContainer({ peerInstance }: { peerInstance: Peer | null }) {
   }, [peerInstance, handleIncomingCall]);
 
   return (
-    <Stack display={"none"}>
+    <Stack display={show ? "block" : "none"}>
       <Box pos="relative" mih={400}>
         <video
           ref={remoteVideoRef}
           autoPlay
-          muted
+          muted={show ? false : true}
           playsInline
           style={{
             width: "100%",
             height: "100%",
-            backgroundColor: "#f0f0f0",
             borderRadius: "8px",
             objectFit: "cover"
           }}
@@ -188,13 +187,12 @@ function StreamContainer({ peerInstance }: { peerInstance: Peer | null }) {
           ref={localVideoRef}
           autoPlay
           playsInline
-          muted
+          muted={show ? false : true}
           style={{
             width: "30%",
             position: "absolute",
             bottom: "10px",
             right: "10px",
-            backgroundColor: "#f0f0f0",
             borderRadius: "8px",
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             objectFit: "cover"
@@ -203,6 +201,7 @@ function StreamContainer({ peerInstance }: { peerInstance: Peer | null }) {
 
         {callState.isCallActive && (
           <ActionIcon
+            display={"none"}
             ref={closeButtonRef}
             color="red"
             variant="filled"
