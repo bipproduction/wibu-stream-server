@@ -83,12 +83,12 @@ function startPeerServer(): void {
     // Event handlers
     peerServer.on("connection", (client) => {
       // console.log("Client connected to Peer Server:", client.getId());
-      updateStatus({ client, isActive: true });
+      // updateStatus({ client, isActive: true });
     });
 
     peerServer.on("disconnect", async (client) => {
       // console.log("Client disconnected from Peer Server:", client.getId());
-      await updateStatus({ client, isActive: false });
+      // await updateStatus({ client, isActive: false });
     });
 
     peerServer.on("message", async (client, data) => {
